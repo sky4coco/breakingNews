@@ -131,27 +131,65 @@
 
     </script>
     <script src="./js/bootstrap/js/bootstrap.min.js"></script>
+
+
     <script>
-        $('.user_center_link a:last').on('click', function (e) {
-            e.preventDefault();
+        $(function () {
+            // 进入页面 自动获取用户信息并渲染到页面
             $.ajax({
-                type: 'post',
-                url: 'https://autumnfish.cn/big/admin/logout',
-                data: {},
-                success: function (backData) {
+                type : "get",
+                url : "http://localhost:8000/admin/getuser",
+                data :'',
+                success : function(backData){
                     console.log(backData);
-                    if (backData.code == 200) {
-                        window.location.href = "./login.html"
-                    } else {
-                        $('.modal-body').text('退出失败,请重试!')
-                        $('#myModal').modal(
-                            { keyboard: true }
-                        );
+                    if(backData.code == 200){
+                        $('.user_info img').attr('src',backData.data.user_pic);
+                        $('.user_info span').html('欢迎&nbsp;&nbsp;' + backData.data.nickname);
+                        $('.user_center_link img').attr('src',backData.data.user_pic);
                     }
                 }
             })
 
+
+
+
+
+
+
+
+
+            // 用户登出功能实现 
+            $('.user_center_link a:last').on('click', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'post',
+                    url: 'https://autumnfish.cn/big/admin/logout',
+                    data: {},
+                    success: function (backData) {
+                        console.log(backData);
+                        if (backData.code == 200) {
+                            window.location.href = "./login.html"
+                        } else {
+                            $('.modal-body').text('退出失败,请重试!')
+                            $('#myModal').modal(
+                                { keyboard: true }
+                            );
+                        }
+                    }
+                })
+            })
         })
+
+
+
+
+
+
+
+
+
+
+
     </script>
 </body>
 
