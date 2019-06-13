@@ -79,6 +79,7 @@
                 success: function (backData) {
                     console.log(backData);
                     if (backData.code != 200) {
+                        // 优化弹出框,用boostrap的插件替代alert弹出框
                         $('.modal-body').text('账号或密码错误,请重新输入!')
                         $('#myModal').modal(
                             { keyboard: true }
