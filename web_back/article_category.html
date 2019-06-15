@@ -72,7 +72,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal">新增分类</a>
+                            <a href="#" class="btn btn-success" id="addArticle" data-toggle="modal" data-target="#addModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
@@ -89,6 +89,7 @@
                 </div>
                 <div class="modal-body">
                     <form>
+                        <input type="text" id="sky_input">
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">分类名称:</label>
                             <input type="text" class="form-control" id="recipient-name1">
@@ -125,8 +126,7 @@
 
         $('.category_table').delegate('a', 'click', function () {
             if ($(this).hasClass('btn-info')) {
-                $('#addModal .modal-title').html('修改分类名称');
-                $('#addModal').modal('show');
+                
             }
         })      
     </script>
@@ -155,10 +155,21 @@
                     $('tbody').html(artHtml)
                 }
             })
+            //点击新增/保存按钮  实现 修改或新增功能! 
             $('#model_add').on('click', function () {
                 var mingcheng = $('#recipient-name1').val();
                 var bieming = $('#recipient-name2').val();
-                $.ajax({
+                // 修改功能
+                if($('#model_add').hasClass('btn-success')){
+                    $.ajax({
+                        type:'post',
+                        url:'http://localhost:8000/admin/category_edit',
+                        data:
+                    })
+                }
+                // 新增功能
+                else{
+                    $.ajax({
                     type: 'post',
                     url: 'http://localhost:8000/admin/category_add',
                     data: {
@@ -181,6 +192,7 @@
                         }
                     }
                 })
+                }
                 $('#addModal').modal('hide');
             })
 
@@ -203,7 +215,27 @@
                         }
                     }
                 })
+            })
 
+            // 新增分类按钮 弹出框设置 
+            $('#addArticle').on('click',function(){
+                $('#addModal .modal-title').html('新增分类名称');
+                $('#model_add').removeClass('btn-success').text('新增');
+            })
+
+            // 编辑按钮功能 实现    
+            // 同样,数据时动态添加的,只能用委托注册
+            $('tbody').on('click','.sky_edi',function(){
+                var id = $(this).siblings('a').attr('data-id');
+                console.log(id);
+                // 修改弹出模态框的样式
+                $('#addModal .modal-title').html('修改分类名称');
+                $('#model_add').addClass('btn-success').text('保存')
+                $('#addModal').modal('show');
+                // 模态弹出框获取受编辑的行的类名 slug
+                $('#recipient-name1').val($(this).parent('td').prev().prev().text());
+                $('#recipient-name2').val($(this).parent('td').prev().text());
+                $('#sky_input').val(id);
             })
         })
     </script>
