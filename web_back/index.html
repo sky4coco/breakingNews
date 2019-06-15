@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="./js/bootstrap/css/bootstrap.min.css">
     <script src="js/jquery-1.12.4.min.js"></script>
 </head>
 
@@ -139,9 +138,8 @@
             $.ajax({
                 type : "get",
                 url : "http://localhost:8000/admin/getuser",
-                data :'',
                 success : function(backData){
-                    console.log(backData);
+                    // console.log(backData);
                     if(backData.code == 200){
                         $('.user_info img').attr('src',backData.data.user_pic);
                         $('.user_info span').html('欢迎&nbsp;&nbsp;' + backData.data.nickname);
@@ -163,8 +161,7 @@
                 e.preventDefault();
                 $.ajax({
                     type: 'post',
-                    url: 'https://autumnfish.cn/big/admin/logout',
-                    data: {},
+                    url: 'http://localhost:8000/admin/logout',
                     success: function (backData) {
                         console.log(backData);
                         if (backData.code == 200) {

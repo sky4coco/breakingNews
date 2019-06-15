@@ -24,19 +24,20 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">用户名称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control username" name="username" id="inputEmail3" value="李思思">
+                        <input type="text" class="form-control username" name="username" id="" value="李思思">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">昵称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control nickname" name="nickname" id="inputEmail3" value="思思">
+                        <input type="text" class="form-control nickname" name="nickname" id="" value="思思">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">邮箱：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control email" name="email" id="inputEmail3" value="lisisi@126.com">
+                        <input type="text" class="form-control email" name="email" id=""
+                            value="lisisi@126.com">
                     </div>
                 </div>
 
@@ -45,7 +46,8 @@
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic">
                         <br>
-                        <label for="exampleInputFile"><img src="./images/upto.png" style="width: 50px;background:aliceblue " alt=""></label>
+                        <label for="exampleInputFile"><img src="./images/upto.png"
+                                style="width: 50px;background:aliceblue " alt=""></label>
                         <input type="file" name="user_pic" id="exampleInputFile" style="display:none">
                     </div>
                 </div>
@@ -53,14 +55,15 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
                     <div class="col-sm-4">
-                        <input type="password" class="form-control password" name="password" id="inputEmail3" value="12345678">
+                        <input type="password" class="form-control password" name="password" id=""
+                            value="12345678">
                     </div>
                 </div>
 
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">修改</button>
+                        <button type="submit" id="btn-sky" class="btn btn-success ">修改</button>
                     </div>
                 </div>
             </form>
@@ -70,45 +73,56 @@
 
         $(function () {
             // 打开页面,将用户信息从后台获取,然后渲染在页面上.
-            function refresh(){
-                $.ajax(
-                {
-                    type: 'get',
-                    url: 'http://localhost:8000/admin/userinfo_get',
-                    data: {},
-                    success: function (backData) {
-                        // console.log(backData);
-                        for (var key in backData.data) {
-                            $('input.' + key).val(backData.data[key]);
-                            $('.user_pic').attr('src', backData.data.user_pic)
+            function refresh() {
+                $.ajax({
+                        type: 'get',
+                        url: 'http://localhost:8000/admin/userinfo_get',
+                        success: function (backData) {
+                            // console.log(backData);
+                            for (var key in backData.data) {
+                                $('input.' + key).val(backData.data[key]);
+                                $('.user_pic').attr('src', backData.data.user_pic)
+                            }
                         }
-                    }
-                });
+                    });
             };
             refresh();
             // 选择文件按钮,添加 图片预览 功能.
-            $('#exampleInputFile').on('change',function(){
+            $('#exampleInputFile').on('change', function () {
                 var icon = this.files[0];
                 console.log(icon);
                 var pic_url = URL.createObjectURL(icon);
-                $('.user_pic').attr('src',pic_url)
+                $('.user_pic').attr('src', pic_url)
             })
+
             // 给提交按钮 添加提交数据功能,利用formData数据传输!!
-            $('.btn-success').on('click',function(e){
+            $('#btn-sky').on('click', function (e) {
                 e.preventDefault();
                 var formData = new FormData($('form')[0]);
                 $.ajax({
-                    type : 'post',
-                    url : 'http://localhost:8000/admin/userinfo_edit',
-                    data : formData,
-                    contentType : false,
-                    processData : false,
-                    success : function (backData){
+                    type: 'post',
+                    url: 'http://localhost:8000/admin/userinfo_edit',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (backData) {
                         // console.log(backData);
-                        if(backData.code==200){
-                            alert('修改成功');
+                        if (backData.code == 200) {
+                            //alert('修改成功');
                             refresh();
-                        }   
+                            $.ajax({
+                                type: "get",
+                                url: "http://localhost:8000/admin/getuser",
+                                success: function (backData) {
+                                    // console.log(backData);
+                                    if (backData.code == 200) {
+                                        parent.$('.user_info img').attr('src', backData.data.user_pic);
+                                        parent.$('.user_info span').html('欢迎&nbsp;&nbsp;' + backData.data.nickname);
+                                        parent.$('.user_center_link img').attr('src', backData.data.user_pic);
+                                    }
+                                }
+                            })
+                        }
                     }
                 })
             })
