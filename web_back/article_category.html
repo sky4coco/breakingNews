@@ -72,7 +72,8 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="#" class="btn btn-success" id="addArticle" data-toggle="modal" data-target="#addModal">新增分类</a>
+                            <a href="#" class="btn btn-success" id="addArticle" data-toggle="modal"
+                                data-target="#addModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
@@ -89,14 +90,14 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <input type="text" id="sky_input">
+                        <input type="hidden" name='id' id="sky_input">
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">分类名称:</label>
-                            <input type="text" class="form-control" id="recipient-name1">
+                            <input type="text" class="form-control" name="name" id="recipient-name1">
                         </div>
                         <div class="form-group">
                             <label for="message-text" class="control-label">分类别名:</label>
-                            <input type="text" class="form-control" id="recipient-name2">
+                            <input type="text" class="form-control" name="slug" id="recipient-name2">
                         </div>
                     </form>
                 </div>
@@ -126,7 +127,7 @@
 
         $('.category_table').delegate('a', 'click', function () {
             if ($(this).hasClass('btn-info')) {
-                
+
             }
         })      
     </script>
@@ -156,42 +157,64 @@
                 }
             })
             //点击新增/保存按钮  实现 修改或新增功能! 
+            // 由于弹出模态框 是同一个模态框,因此,我们需要判断 弹出模态框的时候,是谁来弹出的,不同元素引发这个模态框,模态框的样式不一样,且里面的按钮功能不一样.
+            // 假设点击a b两个按钮都能引发同一个模态框,那在点击a b两个按钮时,设置模态框不同的样式,然后根据模态框的样式不同来判断里面的按钮需要用执行什么功能即可.
             $('#model_add').on('click', function () {
                 var mingcheng = $('#recipient-name1').val();
                 var bieming = $('#recipient-name2').val();
                 // 修改功能
-                if($('#model_add').hasClass('btn-success')){
+                if ($('#model_add').hasClass('btn-success')) {
+                    // var id = $('#sky_input').val();
+                    // var name = $('#recipient-name1').val();
+                    // var slug = $('#recipient-name2').val();
+                    var data1 = $('form').serialize()
+                    console.log(data1);
+                    
+                    // console.log(id + name + slug);
                     $.ajax({
-                        type:'post',
-                        url:'http://localhost:8000/admin/category_edit',
-                        data:
+                        type: 'post',
+                        url: 'http://localhost:8000/admin/category_edit',
+                        data:data1,
+                        success: function (backData) {
+                            if (backData.code == 200) {
+                                $.ajax({
+                                    type: 'get',
+                                    url: 'http://localhost:8000/admin/category_search',
+                                    success: function (backData) {
+                                        // console.log(backData);
+                                        var artHtml = template('tem_art', backData);
+                                        $('tbody').html(artHtml);
+                                    }
+                                })
+                            }
+                        }
                     })
                 }
                 // 新增功能
-                else{
+                else {
                     $.ajax({
-                    type: 'post',
-                    url: 'http://localhost:8000/admin/category_add',
-                    data: {
-                        name: mingcheng,
-                        slug: bieming
-                    },
-                    success: function (backData) {
-                        console.log(backData);
-                        if (backData.code == 200) {
+                        type: 'post',
+                        url: 'http://localhost:8000/admin/category_add',
+                        data: {
+                            name: mingcheng,
+                            slug: bieming
+                        },
+                        success: function (backData) {
+                            console.log(backData);
+                            if (backData.code == 200) {
 
-                            $.ajax({
-                                type: 'get',
-                                url: 'http://localhost:8000/admin/category_search',
-                                success: function (backData) {
-                                    // console.log(backData);
-                                    var artHtml = template('tem_art', backData);
-                                    $('tbody').html(artHtml);
-                                }
-                            })
+                                $.ajax({
+                                    type: 'get',
+                                    url: 'http://localhost:8000/admin/category_search',
+                                    success: function (backData) {
+                                        // console.log(backData);
+                                        var artHtml = template('tem_art', backData);
+                                        $('tbody').html(artHtml);
+                                    }
+                                })
+                            }
                         }
-                    }
-                })
+                    })
                 }
                 $('#addModal').modal('hide');
             })
@@ -210,22 +233,23 @@
                     },
                     success: function (backData) {
                         console.log(backData);
-                        if(backData.code==200){
+                        if (backData.code == 200) {
                             $(that).parent().parent().remove();
                         }
                     }
                 })
             })
-
             // 新增分类按钮 弹出框设置 
-            $('#addArticle').on('click',function(){
+            $('#addArticle').on('click', function () {
+                $('#recipient-name1').val('');
+                $('#recipient-name2').val('');
                 $('#addModal .modal-title').html('新增分类名称');
                 $('#model_add').removeClass('btn-success').text('新增');
             })
 
             // 编辑按钮功能 实现    
             // 同样,数据时动态添加的,只能用委托注册
-            $('tbody').on('click','.sky_edi',function(){
+            $('tbody').on('click', '.sky_edi', function () {
                 var id = $(this).siblings('a').attr('data-id');
                 console.log(id);
                 // 修改弹出模态框的样式
