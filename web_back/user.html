@@ -99,6 +99,8 @@
             $('#btn-sky').on('click', function (e) {
                 e.preventDefault();
                 var formData = new FormData($('form')[0]);
+                console.log(formData);
+                
                 $.ajax({
                     type: 'post',
                     url: 'http://localhost:8000/admin/userinfo_edit',
